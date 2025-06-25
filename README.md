@@ -56,6 +56,30 @@
 * Bookmaker margin is a poor risk proxy – Hypothesis #2 rejected.
 * Stock **over-reacts** to unlikely results and mean-reverts within two days – a tradeable contrarian edge.
 
+### CatBoost correction-model (high-surprise subset)
+*Target definition*: we train the model to predict the **2-to-3-day stock return ("correction") that follows the initial Day-1 reaction for high-surprise matches.*
+
+```
+📋  Hold-out metrics:
+  RMSE = 0.0470
+  R²   = 0.320
+  Sign accuracy = 66.67%
+
+Feature importances:
+  next_day_return       :  62.9
+  is_europa_league      :  15.0
+  surprise_factor       :  14.4
+  bvb_away              :   2.7
+  bvb_home              :   2.0
+  is_champions_league   :   1.3
+  is_bundesliga         :   1.2
+  is_friendly           :   0.4
+  is_domestic_cup       :   0.1
+```
+
+Interpretation – Day-1 move plus surprise factor allow us to forecast ~32 % of the variance in the subsequent 2-day correction and get direction right two-thirds of the time — strong evidence of predictable mean-reversion.
+
+
 
 ## 4 Blind Spots & Obvious Next Steps
 * **Closing odds only** – need intraday line-moves to time entry.
@@ -68,5 +92,6 @@
 pip install -r requirements.txt
 python feature_engineering.py      # builds results/alpha_dataset.csv
 python main.py                     # prints stats above
+python modeling.py                 # CatBoost correction model metrics
 ```
-*(Requires `closing_odds*.csv.gz` in `data/`; drop files manually or configure Kaggle token to auto-download.)* 
+*(Requires closing_odds.csv.gz in data/; drop files manually or configure Kaggle token to auto-download.)*
