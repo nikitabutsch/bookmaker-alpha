@@ -42,23 +42,21 @@ class AlphaFeatureEngineer:
         """Process matches and extract alpha features"""
         features_list = []
         
-        for idx, match in matches_df.iterrows():
+        for _, match in matches_df.iterrows():
             try:
+                # 1. Get next day and 3 day returns
                 match_date = pd.to_datetime(match['match_date'])
-                
-                # Find next trading day
                 next_trading_day = self._get_next_trading_day(match_date, stock_data)
                 if next_trading_day is None:
                     continue
                 
-                # Get target returns
                 try:
                     next_day_return = stock_data.loc[next_trading_day, 'Daily_Return']
                     three_day_return = stock_data.loc[next_trading_day, 'Next_3Day_Return']
                 except KeyError:
                     continue
                 
-                # Extract betting features
+                # 2. Extract betting features (convert bookmaker odds to probabilities)
                 home_prob = 1 / match['avg_odds_home_win'] if pd.notna(match['avg_odds_home_win']) else np.nan
                 draw_prob = 1 / match['avg_odds_draw'] if pd.notna(match['avg_odds_draw']) else np.nan
                 away_prob = 1 / match['avg_odds_away_win'] if pd.notna(match['avg_odds_away_win']) else np.nan
@@ -68,7 +66,7 @@ class AlphaFeatureEngineer:
                     home_prob, draw_prob, away_prob
                 )
                 
-                # Match outcome analysis
+                # 3. Get match outcomes
                 if match['home_score'] > match['away_score']:
                     match_outcome = 1  # Home win
                 elif match['home_score'] < match['away_score']:
@@ -76,7 +74,6 @@ class AlphaFeatureEngineer:
                 else:
                     match_outcome = 0  # Draw
                 
-                # BVB specific features
                 bvb_home = 1 if config.TARGET_TEAM.lower() in match['home_team'].lower() else 0
                 bvb_away = 1 if config.TARGET_TEAM.lower() in match['away_team'].lower() else 0
                 
@@ -89,15 +86,15 @@ class AlphaFeatureEngineer:
                     bvb_win_prob = away_prob_norm
                     opponent_prob = home_prob_norm
                 
-                # Calculate surprise factor
+                # 4. Calculate surprise factor
                 surprise_factor = self._calculate_surprise_factor(
                     match_outcome, bvb_won, bvb_win_prob, draw_prob_norm, opponent_prob
                 )
                 
-                # Match importance features
+                # 5. Get league features
                 league_features = self._extract_league_features(match['league'])
                 
-                # Compile features
+                # 6. Compile features
                 features = {
                     'match_id': match['match_id'],
                     'match_date': match_date,
@@ -179,4 +176,4 @@ def main():
     print(f"✅ Alpha dataset stored at {output_path}")
 
 if __name__ == "__main__":
-    main() 
+    main()
