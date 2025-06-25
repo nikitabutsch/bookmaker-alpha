@@ -1,0 +1,23 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.env/
+.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Data files (do NOT commit large raw data)
+data/
+results/
+plots/
+
+# Kaggle credentials
+.kaggle/
+
+# OS / Editor files
+.DS_Store
+.idea/
+.vscode/ 
