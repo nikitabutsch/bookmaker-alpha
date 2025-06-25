@@ -81,10 +81,15 @@ Interpretation – Day-1 move plus surprise factor allow us to forecast ~32 % of
 
 
 
-## 4 Blind Spots & Obvious Next Steps
+## 4 Blind Spots & Next Steps
 * **Closing odds only** – need intraday line-moves to time entry.
 * **Single issuer** – extend cross-sectionally to listed clubs or sports franchises.
 * **Execution** – add liquidity/impact model; current returns are gross.
+* **Walk-forward validation** – roll an expanding-window train/test to ensure out-of-time performance.
+* **Cross-sectional test** – replicate on other listed clubs (MANU, JUVE, AFC.BR) to rule out sample-specific artefacts.
+* **Live odds feed & paper trading** – stream real-time closing lines, generate signals and paper-trade for 1-3 months.
+* **Cost-adjusted back-test** – embed bid-ask + 2 bp commission and re-evaluate Sharpe / hit-rate.
+* **Risk overlay** – size positions by predicted correction magnitude; circuit-break if live hit-rate < 55 %.
 
 
 ## 6 Run It
@@ -94,4 +99,3 @@ python feature_engineering.py      # builds results/alpha_dataset.csv
 python main.py                     # prints stats above
 python modeling.py                 # CatBoost correction model metrics
 ```
-*(Requires closing_odds.csv.gz in data/; drop files manually or configure Kaggle token to auto-download.)*
