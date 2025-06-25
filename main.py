@@ -45,11 +45,6 @@ def main():
     print("\n🔍 Analyzing predictive alpha signals...")
     analysis_results = analyzer.analyze_alpha_signals(alpha_dataset)
     
-    # =================================================================
-    # 3. SUMMARY
-    # =================================================================
-    print("\n✅ Analysis complete!")
-    
     return alpha_dataset, analysis_results
 
 if __name__ == "__main__":

@@ -8,15 +8,22 @@
 * Data        :  
   • Closing odds from 30+ bookmakers (Kaggle *Beat-the-Bookie*)  
   • Daily OHLC for BVB.DE (Yahoo Finance)  
-* Code path   : `feature_engineering.py` → `main.py` → **console output only** – no notebooks, no dashboards.
+* Core pipeline : `feature_engineering.py` → `main.py` (analysis stats)
+* Optional step : `modeling.py` – standalone CatBoost model, run separately
+
+### Working hypotheses
+1. **Odds-Momentum** – Higher implied win-probability should predict a positive next-day return (betting market leads equity).
+2. **Margin-Volatility** – Larger bookmaker margin (market uncertainty) should foreshadow higher next-day volatility.
+3. **Surprise Mean-Reversion** – When the actual result strongly contradicts the odds, the Day-1 price reaction will partially reverse over Days 2-3.
+
+Hypotheses 1 & 2 were empirically rejected; Hypothesis 3 is strongly supported and forms the basis of the CatBoost model below.
 
 
-## 2 What Happens Under the Hood
-```
-1  Load & tidy        – odds  + stock prices
-2  Engineer factors   – win/draw/lose probs, bookmaker margin, SURPRISE factor
-3  Analyse            – next-day return vs. factors, mean-reversion tests
-```
+## 2 The Pipeline
+1. **Load Data**: odds + stock prices
+2. **Feature Engineering**: win/draw/lose probs, bookmaker margin, surprise factor, match importance
+3.  **Statistical Analysis**: next-day return vs. factors, mean-reversion tests
+4. **Fit CatBoost Model**
 
 
 ## 3 Findings (printed by `main.py`)
@@ -56,10 +63,13 @@
 * Bookmaker margin is a poor risk proxy – Hypothesis #2 rejected.
 * Stock **over-reacts** to unlikely results and mean-reverts within two days – a tradeable contrarian edge.
 
-### CatBoost correction-model (high-surprise subset)
+## 4 CatBoost correction-model (high-surprise subset)
 *Target definition*: we train the model to predict the **2-to-3-day stock return ("correction") that follows the initial Day-1 reaction for high-surprise matches.*
 
 ```
+High-surprise sample: 370 matches
+Train n = 277, Test n = 93
+
 📋  Hold-out metrics:
   RMSE = 0.0470
   R²   = 0.320
@@ -81,7 +91,7 @@ Interpretation – Day-1 move plus surprise factor allow us to forecast ~32 % of
 
 
 
-## 4 Blind Spots & Next Steps
+## 5 Blind Spots & Next Steps
 * **Closing odds only** – need intraday line-moves to time entry.
 * **Single issuer** – extend cross-sectionally to listed clubs or sports franchises.
 * **Execution** – add liquidity/impact model; current returns are gross.
