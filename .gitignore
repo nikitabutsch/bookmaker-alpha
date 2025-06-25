@@ -13,6 +13,7 @@ __pycache__/
 data/
 results/
 plots/
+catboost_info/
 
 # Kaggle credentials
 .kaggle/
