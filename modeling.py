@@ -4,7 +4,7 @@ Runs CatBoost on surprise factor, Day-1 move and league context.
 """
 
 import pandas as pd
-from catboost import CatBoostRegressor
+from catboost import CatBoostRegressor, Pool
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
@@ -24,7 +24,7 @@ def _load_data(path=f"{config.RESULTS_DIR}/alpha_dataset.csv", threshold: float 
     return df[df["surprise_factor"] > threshold].copy()
 
 
-def main():
+def generate_correction_model():
     data = _load_data()
     print(f"High-surprise sample: {len(data)} matches")
 
@@ -65,10 +65,18 @@ def main():
 
     print(f"\n📋  Hold-out metrics:\n  RMSE = {rmse:.4f}\n  R²   = {r2:.3f}\n  Sign accuracy = {direction_acc:.2%}")
 
-    print("\nFeature importances:")
-    for f, imp in sorted(zip(feature_cols, model.get_feature_importance()), key=lambda x: x[1], reverse=True):
-        print(f"  {f:22s}: {imp:5.1f}")
+    # --- SHAP-based feature importances -------------------------------------
+    # CatBoost can return SHAP (Shapley) values per sample; the last column is
+    # the expected value, so we drop it and take the mean absolute contribution
+    # of each feature across the hold-out set.
+    print("\nSHAP-based feature importances (percentage of total):")
+    shap_pct = model.get_feature_importance(
+        Pool(X_test, label=y_test),
+        type="PredictionValuesChange",  # already normalised to sum to 100
+    )
+    for f, imp in sorted(zip(feature_cols, shap_pct), key=lambda x: x[1], reverse=True):
+        print(f"  {f:22s}: {imp:5.1f}%")
 
 
 if __name__ == "__main__":
-    main() 
+    generate_correction_model() 

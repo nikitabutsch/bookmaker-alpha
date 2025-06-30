@@ -45,6 +45,13 @@ def main():
     print("\n🔍 Analyzing predictive alpha signals...")
     analysis_results = analyzer.analyze_alpha_signals(alpha_dataset)
     
+    # ================================================================
+    # 3. TRAIN CORRECTION MODEL & SHOW SHAP IMPORTANCE
+    # ================================================================
+    print("\n🧠  Training correction model & computing SHAP feature importance…")
+    import modeling
+    modeling.generate_correction_model()
+    
     return alpha_dataset, analysis_results
 
 if __name__ == "__main__":
