@@ -75,17 +75,17 @@ Train n = 277, Test n = 93
   R²   = 0.320
   Sign accuracy = 66.67%
 
-Feature importances:
-  next_day_return       :  62.9
-  is_europa_league      :  15.0
-  surprise_factor       :  14.4
-  bvb_away              :   2.7
-  bvb_home              :   2.0
-  is_champions_league   :   1.3
-  is_bundesliga         :   1.2
-  is_friendly           :   0.4
-  is_domestic_cup       :   0.1
-```
+SHAP-based feature importances (percentage of total):
+  next_day_return       :  67.0%
+  surprise_factor       :  12.6%
+  is_europa_league      :   8.9%
+  bvb_away              :   4.5%
+  bvb_home              :   3.0%
+  is_champions_league   :   2.1%
+  is_bundesliga         :   1.4%
+  is_friendly           :   0.3%
+  is_domestic_cup       :   0.2%
+  ```
 
 Interpretation – Day-1 move plus surprise factor allow us to forecast ~32 % of the variance in the subsequent 2-day correction and get direction right two-thirds of the time — strong evidence of predictable mean-reversion.
 
